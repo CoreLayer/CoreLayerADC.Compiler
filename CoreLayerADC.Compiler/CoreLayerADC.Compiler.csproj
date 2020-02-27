@@ -6,6 +6,8 @@
         <PublishTrimmed>true</PublishTrimmed>
         <PublishReadyToRun>true</PublishReadyToRun>
         <PublishSingleFile>true</PublishSingleFile>
+        <RuntimeIdentifiers>linux-x64;osx-x64;win-x64</RuntimeIdentifiers>
+        <RuntimeIdentifier>osx-x64</RuntimeIdentifier>
     </PropertyGroup>
 
     <ItemGroup>
