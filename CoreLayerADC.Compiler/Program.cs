@@ -13,33 +13,38 @@ namespace CoreLayerADC.Compiler
         static void Main(string[] args)
         {
             var searchPath = args[0];
-            var outputType = Enum.Parse<FrameworkOutputMode>(args[1]);
-            Console.WriteLine("ADC Framework Script Generator");
-            Console.WriteLine("------------------------------");
+            Console.WriteLine("CoreLayerADC Framework Compiler");
+            Console.WriteLine("-------------------------------");
             
             Console.WriteLine("Search path: {0}", searchPath);
-            Console.WriteLine("Output Type: {0}", outputType);
             
-            Console.WriteLine();
-            
-            
-            var sortedModules = GetFrameworkModules(searchPath);
-            var frameworkModules = sortedModules as FrameworkModule[] ?? sortedModules.ToArray();
-            var placeholders = LoadPlaceholders(frameworkModules);
-            var sortedExpressions = GetFrameworkExpressions(frameworkModules, outputType);
+            GenerateOutputFile(searchPath, FrameworkOutputMode.Install);
+            GenerateOutputFile(searchPath, FrameworkOutputMode.Uninstall);
+        }
 
+        private static void GenerateOutputFile(string searchPath, FrameworkOutputMode outputType)
+        {
+            var sortedModules = EnumerateFrameworkModules(searchPath);
+            //var frameworkModules = sortedModules as FrameworkModule[];// ?? sortedModules.ToArray();
+            var placeholders = LoadPlaceholders(sortedModules);
+            var sortedExpressions = GetFrameworkExpressions(sortedModules, outputType);
+
+            File.WriteAllLines(
+                outputType.ToString().ToLower() + ".conf", 
+                GetOutputLines(sortedExpressions, placeholders, sortedModules));
+        }
+
+        private static IEnumerable<string> GetOutputLines(IEnumerable<string> sortedExpressions, Dictionary<string, string> placeholders,
+            IEnumerable<FrameworkModule> frameworkModules)
+        {
             var outputExpressions = ReplacePlaceholdersInExpressions(sortedExpressions, placeholders);
+            var coreVersion = frameworkModules.Single(module => module.Name.Equals("Core")).Version;
             outputExpressions = ReplaceVersion(
-                outputExpressions, 
-                frameworkModules.Single(module => module.Name.Equals("Core")).Version.Major, 
-                frameworkModules.Single(module => module.Name.Equals("Core")).Version.Minor
-                );
-
-            Console.WriteLine();
-            foreach (var expression in outputExpressions)
-            {
-                Console.WriteLine(expression);
-            }
+                outputExpressions,
+                coreVersion.Major,
+                coreVersion.Minor
+            );
+            return outputExpressions;
         }
 
         private static IEnumerable<string> ReplaceVersion(IEnumerable<string> expressions, int majorVersion, int minorVersion)
@@ -145,9 +150,11 @@ namespace CoreLayerADC.Compiler
         
         private static Dictionary<string, int> CountExpressionDependencies(IEnumerable<Section> sections)
         {
-            var elementOccurenceCounter = sections.SelectMany(section => section.Elements).ToDictionary(element => element.Name, element => 0);
+            var sectionElements = sections.SelectMany(section => section.Elements);
+            var nitroElements = sectionElements as NitroElement[] ?? sectionElements.ToArray();
+            var elementOccurenceCounter = nitroElements.ToDictionary(element => element.Name, element => 0);
             
-            foreach (var dependency in sections.SelectMany(section => section.Elements))
+            foreach (var dependency in nitroElements)
             {
                 elementOccurenceCounter[dependency.Name]++;
                 CountNestedExpressionDependencies(sections, dependency.Name, elementOccurenceCounter);
@@ -167,7 +174,7 @@ namespace CoreLayerADC.Compiler
             }
         }
 
-        private static IEnumerable<FrameworkModule> GetFrameworkModules(string searchPath)
+        private static IEnumerable<FrameworkModule> EnumerateFrameworkModules(string searchPath)
         {
             var filePaths = Directory.EnumerateFiles(searchPath, "*.yaml", SearchOption.AllDirectories);
             var modules = filePaths.Select(filePath => ReadModuleFromYaml(ReadYamlFromFile(filePath)))
