@@ -30,7 +30,7 @@ namespace CoreLayerADC.Compiler
             var sortedExpressions = GetFrameworkExpressions(sortedModules, outputType);
 
             File.WriteAllLines(
-                outputType.ToString().ToLower() + ".conf", 
+                searchPath + outputType.ToString().ToLower() + ".conf", 
                 GetOutputLines(sortedExpressions, placeholders, sortedModules));
         }
 
