@@ -51,15 +51,14 @@ namespace CoreLayerADC.Compiler.Processor
 
         private void SortExpressions()
         {
-            var modules = _sortedModuleNames.ToList();
-            Parallel.For(0, _sortedModuleNames.Count(), (currentIndex) =>
-            {
-                var moduleName = modules[currentIndex];
-                var module = _modules[moduleName];
+            var moduleNames = _sortedModuleNames.ToList();
 
+            for(var currentIndex = 0; currentIndex < _sortedModuleNames.Count(); currentIndex++)
+            {
+                var moduleName = moduleNames[currentIndex];
                 _sortedModuleExpressions[moduleName] = 
-                    ModuleExpressionSubProcessor.GetSortedExpressions(module).ToList();
-            });
+                    ModuleCommandProcessor.GetCommandOrder(_modules, moduleName).ToList();
+            }
         }
         
         private void SortPlaceholders()

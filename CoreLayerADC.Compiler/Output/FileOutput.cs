@@ -32,13 +32,33 @@ namespace CoreLayerADC.Compiler.Output
         private static void WriteToFile(IEnumerable<string> commands, string path, FrameworkOutputMode outputType)
         {
             var outputFile = outputType.ToString().ToLower() + ".conf";
+
+            File.WriteAllLines(
+                Path.Combine(GetOutputPath(path), outputFile), 
+                FilterEmptyLines(commands));
+        }
+
+        private static string GetOutputPath(string path)
+        {
             var outputPath = Path.Combine(path, "output");
             if (!Directory.Exists(outputPath))
             {
                 Directory.CreateDirectory(outputPath);
             }
-            File.WriteAllLines(
-                Path.Combine(outputPath, outputFile), commands);
+
+            return outputPath;
+        }
+
+        private static IEnumerable<string> FilterEmptyLines(IEnumerable<string> commands)
+        {
+            var outputCommands = new List<string>();
+            foreach (var command in commands)
+            {
+                var tempCommands = command.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
+                outputCommands.AddRange(tempCommands);
+            }
+
+            return outputCommands;
         }
 
         private static IEnumerable<string> GetInstallCommands(ModuleProcessor moduleProcessor)
