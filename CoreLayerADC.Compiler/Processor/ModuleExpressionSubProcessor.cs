@@ -8,7 +8,7 @@ namespace CoreLayerADC.Compiler.Processor
 {
     public static class ModuleExpressionSubProcessor
     {
-        public static IEnumerable<string> GetSortedExpressions(FrameworkModule module, FrameworkOutputMode mode)
+        public static IEnumerable<string> GetSortedExpressions(FrameworkModule module)
         {
             var expressionsOrder = GetFrameworkExpressionsOrder(module);
             return expressionsOrder;

@@ -14,8 +14,7 @@ namespace CoreLayerADC.Compiler.Processor
         private readonly Dictionary<string, FrameworkModule> _modules;
         private IEnumerable<string> _sortedModuleNames;
         private Dictionary<string, string> _placeholders = new Dictionary<string, string>();
-        private readonly Dictionary<string, List<string>> _installExpressions = new Dictionary<string, List<string>>();
-        private readonly Dictionary<string, List<string>> _uninstallExpressions = new Dictionary<string, List<string>>();
+        private readonly Dictionary<string, List<string>> _sortedModuleExpressions = new Dictionary<string, List<string>>();
 
         private ModuleProcessor(Dictionary<string, FrameworkModule> modules)
         {
@@ -58,11 +57,8 @@ namespace CoreLayerADC.Compiler.Processor
                 var moduleName = modules[currentIndex];
                 var module = _modules[moduleName];
 
-                _installExpressions[moduleName] = 
-                    ModuleExpressionSubProcessor.GetSortedExpressions(module, FrameworkOutputMode.Install).ToList();
-
-                _uninstallExpressions[moduleName] = 
-                    ModuleExpressionSubProcessor.GetSortedExpressions(module, FrameworkOutputMode.Uninstall).Reverse().ToList();
+                _sortedModuleExpressions[moduleName] = 
+                    ModuleExpressionSubProcessor.GetSortedExpressions(module).ToList();
             });
         }
         
@@ -90,7 +86,6 @@ namespace CoreLayerADC.Compiler.Processor
         public IEnumerable<string> InstallModuleNames => _sortedModuleNames;
         public IEnumerable<string> UninstallModuleNames => _sortedModuleNames.Reverse();
         public Dictionary<string, string> Placeholders => _placeholders;
-        public Dictionary<string, List<string>> InstallExpressions => _installExpressions;
-        public Dictionary<string, List<string>> UninstallExpressions => _uninstallExpressions;
+        public Dictionary<string, List<string>> SortedModuleExpressions => _sortedModuleExpressions;
     }
 }

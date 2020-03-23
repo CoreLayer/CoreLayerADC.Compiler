@@ -56,7 +56,7 @@ namespace CoreLayerADC.Compiler.Output
         
                 // Fill commands based on order
                 commands.AddRange(
-                    moduleProcessor.InstallExpressions[moduleName].Select(name => tempDict[name]));
+                    moduleProcessor.SortedModuleExpressions[moduleName].Select(name => tempDict[name]));
             }
             return commands;
         }
@@ -75,8 +75,7 @@ namespace CoreLayerADC.Compiler.Output
                 }
 
                 // Fill commands based on order
-                commands.AddRange(moduleProcessor.UninstallExpressions[moduleName]
-                    .Select(name => tempDict[name]));
+                commands.AddRange(moduleProcessor.SortedModuleExpressions[moduleName].Select(name => tempDict[name]).Reverse());
             }
         
             return commands;
