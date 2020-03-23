@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using CoreLayerADC.Compiler.Model;
 using CoreLayerADC.Compiler.Output;
 using CoreLayerADC.Compiler.Processor;
 
