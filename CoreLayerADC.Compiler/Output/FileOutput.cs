@@ -75,8 +75,9 @@ namespace CoreLayerADC.Compiler.Output
                 }
         
                 // Fill commands based on order
-                commands.AddRange(
-                    moduleProcessor.SortedModuleExpressions[moduleName].Select(name => tempDict[name]));
+                commands.AddRange(GetModuleOutputPrefix(moduleName));
+                commands.AddRange(moduleProcessor.SortedModuleExpressions[moduleName].Select(name => tempDict[name]));
+                commands.AddRange(GetModuleOutputSuffix(moduleName));
             }
             return commands;
         }
@@ -95,7 +96,9 @@ namespace CoreLayerADC.Compiler.Output
                 }
 
                 // Fill commands based on order
+                commands.AddRange(GetModuleOutputPrefix(moduleName));
                 commands.AddRange(moduleProcessor.SortedModuleExpressions[moduleName].Select(name => tempDict[name]).Reverse());
+                commands.AddRange(GetModuleOutputSuffix(moduleName));
             }
         
             return commands;
@@ -126,6 +129,30 @@ namespace CoreLayerADC.Compiler.Output
                     (result, s) => result.Replace(s.Key, s.Value)
                 )
             ).ToList();
+        }
+
+        private static IEnumerable<string> GetModuleOutputPrefix(string moduleName)
+        {
+            return new List<string>
+            {
+                "#",
+                "##",
+                "###",
+                "############################################",
+                "# MODULE " + moduleName + " - START",
+            };
+        }
+        
+        private static IEnumerable<string> GetModuleOutputSuffix(string moduleName)
+        {
+            return new List<string>
+            {
+                "# MODULE " + moduleName + " - END",
+                "############################################",
+                "###",
+                "##",
+                "#",
+            };
         }
     }
 }
