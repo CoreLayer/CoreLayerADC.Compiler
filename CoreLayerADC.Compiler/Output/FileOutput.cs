@@ -34,6 +34,15 @@ namespace CoreLayerADC.Compiler.Output
 
         private static void WriteToFile(IEnumerable<string> commands, string path, FrameworkOutputMode outputType)
         {
+            if (commands.Any(line => line.Contains("PLH")))
+            {
+                foreach (var line in commands.Where(line => line.Contains("PLH")))
+                {
+                    Console.WriteLine(line);
+                }
+                throw new ArgumentException("Placeholders not replaced", nameof(commands));
+            }
+
             var outputFile = outputType.ToString().ToLower() + ".conf";
 
             File.WriteAllLines(
@@ -109,17 +118,9 @@ namespace CoreLayerADC.Compiler.Output
         
         private static IEnumerable<string> ReplaceParameters(IEnumerable<string> commands, ModuleProcessor moduleProcessor)
         {
-            var iteration = 0;
             var output = commands;
-            bool repeatLoop;
-            do
-            {
-                output = ReplacePlaceholders(output, moduleProcessor.Placeholders);
-
-                repeatLoop = output.Any(line => line.Contains("PLH"));
-            }
-            while (repeatLoop);
             
+            output = ReplacePlaceholders(output, moduleProcessor.Placeholders);
             output = ReplaceVersion(output, moduleProcessor.Version);
             
             return output;
@@ -137,12 +138,24 @@ namespace CoreLayerADC.Compiler.Output
         private static IEnumerable<string> ReplacePlaceholders(IEnumerable<string> commands,
             Dictionary<string, string> placeholders)
         {
-            return commands.Select(
-                expression => placeholders.Aggregate(
-                    expression, 
-                    (result, s) => result.Replace(s.Key, s.Value)
-                )
-            ).ToList();
+            var output = commands;
+
+            // Perform 10 iterations
+            var iteration = 0;
+            bool repeatLoop;
+            do
+            {
+                iteration++;
+                output = commands.Select(
+                    expression => placeholders.Aggregate(
+                        expression,
+                        (result, s) => result.Replace(s.Key, s.Value)
+                    ));
+                repeatLoop = output.Any(line => line.Contains("PLH"));
+            }
+            while (repeatLoop && iteration < 10);
+
+            return output;
         }
 
         private static IEnumerable<string> GetModuleOutputPrefix(string moduleName)

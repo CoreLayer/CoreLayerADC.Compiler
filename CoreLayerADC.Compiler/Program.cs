@@ -18,7 +18,14 @@ namespace CoreLayerADC.Compiler
 
             _moduleProcessor = ModuleProcessor.GetModuleProcessor(ModuleLoader.LoadModulesFromDirectory(searchPath));
 
-            FileOutput.WriteAll(_moduleProcessor, searchPath);
+            try
+            {
+                FileOutput.WriteAll(_moduleProcessor, searchPath);
+            }
+            catch (ArgumentException ex)
+            {
+                Console.WriteLine("Terminating application: {0}", ex.Message);
+            }
         }
     }
 }
