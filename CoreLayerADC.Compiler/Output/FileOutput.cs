@@ -111,9 +111,10 @@ namespace CoreLayerADC.Compiler.Output
         {
             var iteration = 0;
             var output = commands;
-            var repeatLoop = false;
+            bool repeatLoop;
             do
             {
+                repeatLoop = false;
                 iteration++;
                 output = ReplacePlaceholders(output, moduleProcessor.Placeholders);
 
