@@ -146,7 +146,7 @@ namespace CoreLayerADC.Compiler.Output
             do
             {
                 iteration++;
-                output = commands.Select(
+                output = output.Select(
                     expression => placeholders.Aggregate(
                         expression,
                         (result, s) => result.Replace(s.Key, s.Value)
