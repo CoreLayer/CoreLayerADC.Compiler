@@ -111,20 +111,26 @@ namespace CoreLayerADC.Compiler.Output
         {
             int iteration = 0;
             IEnumerable<string> output;
+            bool repeat = true;
             do
             {
                 iteration++;
+                bool currentIteration = false;
                 output = ReplacePlaceholders(commands, moduleProcessor.Placeholders);
                 foreach (var line in output)
                 {
                     Console.WriteLine(line);
                     if (line.Contains("PLH"))
                     {
+                        currentIteration = true;
                         Console.WriteLine("\t" + line);
                     }
                 }
+
+                repeat = currentIteration;
+                Console.WriteLine("Repeating loop: {0}", repeat);
             }
-            while (output.Contains("PLH"));
+            while (repeat);
             
             Console.WriteLine("Iterations required for Placeholder replacement: {0}", iteration);
             output = ReplaceVersion(output, moduleProcessor.Version);
