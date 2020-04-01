@@ -109,7 +109,7 @@ namespace CoreLayerADC.Compiler.Output
         
         private static IEnumerable<string> ReplaceParameters(IEnumerable<string> commands, ModuleProcessor moduleProcessor)
         {
-            int iteration = 0;
+            int iteration = 1;
             IEnumerable<string> output;
             do
             {
