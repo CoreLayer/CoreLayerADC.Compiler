@@ -109,16 +109,26 @@ namespace CoreLayerADC.Compiler.Output
         
         private static IEnumerable<string> ReplaceParameters(IEnumerable<string> commands, ModuleProcessor moduleProcessor)
         {
-            int iteration = 0;
+            var iteration = 0;
             var output = commands;
+            var repeatLoop = false;
             do
             {
                 iteration++;
                 output = ReplacePlaceholders(output, moduleProcessor.Placeholders);
+
+                foreach (var line in output)
+                {
+                    if (!line.Contains("PLH")) continue;
+                    
+                    Console.WriteLine(line);
+                    repeatLoop = true;
+                    break;
+                }
             }
-            while (output.Contains("PLH"));
+            while (repeatLoop);
             
-            Console.WriteLine("Iterations required for Placeholder replacement: {0}", iteration);
+            Console.WriteLine("\tIterations required for Placeholder replacement: {0}", iteration);
             output = ReplaceVersion(output, moduleProcessor.Version);
             
             return output;
