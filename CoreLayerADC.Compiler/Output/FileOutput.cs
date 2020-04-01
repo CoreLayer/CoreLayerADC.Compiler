@@ -109,12 +109,20 @@ namespace CoreLayerADC.Compiler.Output
         
         private static IEnumerable<string> ReplaceParameters(IEnumerable<string> commands, ModuleProcessor moduleProcessor)
         {
-            int iteration = 1;
+            int iteration = 0;
             IEnumerable<string> output;
             do
             {
-                output = ReplacePlaceholders(commands, moduleProcessor.Placeholders);
                 iteration++;
+                output = ReplacePlaceholders(commands, moduleProcessor.Placeholders);
+                foreach (var line in output)
+                {
+                    Console.WriteLine(line);
+                    if (line.Contains("PLH"))
+                    {
+                        Console.WriteLine("\t" + line);
+                    }
+                }
             }
             while (output.Contains("PLH"));
             
