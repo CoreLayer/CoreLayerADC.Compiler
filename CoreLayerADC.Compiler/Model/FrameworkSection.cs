@@ -2,9 +2,9 @@ using System.Collections.Generic;
 
 namespace CoreLayerADC.Compiler.Model
 {
-    public class Section
+    public class FrameworkSection
     {
         public string Name { get; set; }
-        public List<NitroElement> Elements { get; set; }
+        public IEnumerable<FrameworkElement> Elements { get; set; }
     }
 }

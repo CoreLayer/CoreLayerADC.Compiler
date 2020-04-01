@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using CoreLayerADC.Compiler.Model;
 using CoreLayerADC.Compiler.Processor;
+// ReSharper disable PossibleMultipleEnumeration
 
 namespace CoreLayerADC.Compiler.Output
 {
@@ -17,6 +18,7 @@ namespace CoreLayerADC.Compiler.Output
 
         public static void WriteInstall(ModuleProcessor moduleProcessor, string path)
         {
+            Console.WriteLine("Generating {0}", FrameworkOutputMode.Install);
             var commands = GetInstallCommands(moduleProcessor);
             var output = ReplaceParameters(commands, moduleProcessor);
             WriteToFile(output, path, FrameworkOutputMode.Install);
@@ -24,6 +26,7 @@ namespace CoreLayerADC.Compiler.Output
 
         public static void WriteUninstall(ModuleProcessor moduleProcessor, string path)
         {
+            Console.WriteLine("Generating {0}", FrameworkOutputMode.Uninstall);
             var commands = GetUninstallCommands(moduleProcessor);
             var output = ReplaceParameters(commands, moduleProcessor);
             WriteToFile(output, path, FrameworkOutputMode.Uninstall);
@@ -106,8 +109,18 @@ namespace CoreLayerADC.Compiler.Output
         
         private static IEnumerable<string> ReplaceParameters(IEnumerable<string> commands, ModuleProcessor moduleProcessor)
         {
-            var output = ReplacePlaceholders(commands, moduleProcessor.Placeholders);
+            int iteration = 0;
+            IEnumerable<string> output;
+            do
+            {
+                output = ReplacePlaceholders(commands, moduleProcessor.Placeholders);
+                iteration++;
+            }
+            while (output.Contains("PLH"));
+            
+            Console.WriteLine("Iterations required for Placeholder replacement: {0}", iteration);
             output = ReplaceVersion(output, moduleProcessor.Version);
+            
             return output;
         }
 

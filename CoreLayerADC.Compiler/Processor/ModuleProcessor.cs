@@ -8,7 +8,7 @@ namespace CoreLayerADC.Compiler.Processor
     public class ModuleProcessor
     {
         private static ModuleProcessor _moduleProcessor;
-        private static readonly object _lock = new object();
+        private static readonly object Lock = new object();
 
         private readonly Dictionary<string, FrameworkModule> _modules;
         private IEnumerable<string> _sortedModuleNames;
@@ -24,7 +24,7 @@ namespace CoreLayerADC.Compiler.Processor
         {
             if (_moduleProcessor == null)
             {
-                lock (_lock)
+                lock (Lock)
                 {
                     if (_moduleProcessor == null)
                     {

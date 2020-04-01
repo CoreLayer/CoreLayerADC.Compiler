@@ -6,8 +6,8 @@ namespace CoreLayerADC.Compiler.Model
     {
         public string Name { get; set; }
         public FrameworkVersion Version { get; set; }
-        public List<string> Dependencies { get; set; }
-        public List<Placeholder> Placeholders { get; set; }
-        public List<Section> Sections { get; set; }
+        public IEnumerable<string> Dependencies { get; set; }
+        public IEnumerable<FrameworkPlaceholder> Placeholders { get; set; }
+        public IEnumerable<FrameworkSection> Sections { get; set; }
     }
 }
