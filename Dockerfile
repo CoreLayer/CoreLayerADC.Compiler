@@ -13,4 +13,4 @@ WORKDIR /app
 COPY --from=build-env /app/out .
 ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1
 
-ENTRYPOINT ["/app/CoreLayerADC.Compiler"]
+ENTRYPOINT ["/app/CoreLayerADC.Compiler", "/corelayer/src"]
