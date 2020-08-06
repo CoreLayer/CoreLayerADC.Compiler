@@ -53,10 +53,11 @@ namespace CoreLayerADC.Compiler.Output
         private static string GetOutputPath(string path)
         {
             var outputPath = Path.Combine(path, "output");
-            if (!Directory.Exists(outputPath))
-            {
-                Directory.CreateDirectory(outputPath);
-            }
+
+            if (Directory.Exists(outputPath)) return outputPath;
+            
+            Console.WriteLine("Creating output directory: {0}", outputPath);
+            Directory.CreateDirectory(outputPath);
 
             return outputPath;
         }
@@ -118,6 +119,7 @@ namespace CoreLayerADC.Compiler.Output
         
         private static IEnumerable<string> ReplaceParameters(IEnumerable<string> commands, ModuleProcessor moduleProcessor)
         {
+            Console.WriteLine("\tReplacing parameters");
             var output = commands;
             
             output = ReplacePlaceholders(output, moduleProcessor.Placeholders);
@@ -128,6 +130,7 @@ namespace CoreLayerADC.Compiler.Output
 
         private static IEnumerable<string> ReplaceVersion(IEnumerable<string> commands, FrameworkVersion version)
         {
+            Console.WriteLine("\t\tVersion");
             return commands.Select(expression =>
                 expression.Replace("_V_",
                     "CL" + version.Major.ToString().PadLeft(2, '0') 
@@ -138,6 +141,7 @@ namespace CoreLayerADC.Compiler.Output
         private static IEnumerable<string> ReplacePlaceholders(IEnumerable<string> commands,
             Dictionary<string, string> placeholders)
         {
+            Console.WriteLine("\t\tPlaceholders");
             var output = commands;
 
             // Perform 10 iterations

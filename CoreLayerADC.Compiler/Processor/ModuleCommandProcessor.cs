@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using CoreLayerADC.Compiler.Model;
@@ -42,14 +43,26 @@ namespace CoreLayerADC.Compiler.Processor
         
         private static void CountCommandNestedDependencies(IEnumerable<FrameworkSection> sections, string dependency, Dictionary<string, int> elementOccurenceCounter)
         {
-            foreach (var expressionDependency in sections.SelectMany(section => section.Elements)
-                .Where(element => element.Name == dependency && element.Dependencies != null)
-                .SelectMany(module => module.Dependencies))
+            try
             {
-                if (KnownDependencies.Contains(expressionDependency)) continue;
-                
-                elementOccurenceCounter[expressionDependency]++;
-                CountCommandNestedDependencies(sections, expressionDependency, elementOccurenceCounter);
+                Console.WriteLine("Counting nested dependencies for {0}", dependency);
+                foreach (var expressionDependency in sections.SelectMany(section => section.Elements)
+                    .Where(element => element.Name == dependency && element.Dependencies != null)
+                    .SelectMany(module => module.Dependencies))
+                {
+                    if (KnownDependencies.Contains(expressionDependency))
+                        continue;
+
+                    elementOccurenceCounter[expressionDependency]++;
+                    CountCommandNestedDependencies(sections, expressionDependency, elementOccurenceCounter);
+                }
+            }
+            catch (KeyNotFoundException ex)
+            {
+                Console.WriteLine();
+                Console.WriteLine("Error processing: {0}", dependency);
+                Console.WriteLine(ex.Message);
+                Environment.Exit(0);
             }
         }
     }

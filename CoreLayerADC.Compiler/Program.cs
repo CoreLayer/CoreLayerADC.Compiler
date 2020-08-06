@@ -16,10 +16,10 @@ namespace CoreLayerADC.Compiler
             
             Console.WriteLine("Search path: {0}", searchPath);
 
-            _moduleProcessor = ModuleProcessor.GetModuleProcessor(ModuleLoader.LoadModulesFromDirectory(searchPath));
-
             try
             {
+                _moduleProcessor =
+                    ModuleProcessor.GetModuleProcessor(ModuleLoader.LoadModulesFromDirectory(searchPath));
                 FileOutput.WriteAll(_moduleProcessor, searchPath);
             }
             catch (ArgumentException ex)

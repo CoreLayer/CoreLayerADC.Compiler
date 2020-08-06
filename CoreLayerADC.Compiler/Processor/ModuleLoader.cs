@@ -12,6 +12,7 @@ namespace CoreLayerADC.Compiler.Processor
     {
         public static Dictionary<string, FrameworkModule> LoadModulesFromDirectory(string searchPath)
         {
+            Console.WriteLine("Looking for modules in {0}", searchPath);
             var filePaths = Directory.EnumerateFiles(searchPath, "*.yaml", SearchOption.AllDirectories);
             var modules = filePaths.Select(filePath => ReadModuleFromYaml(ReadYamlFromFile(filePath)))
                 .ToDictionary(module => module.Name);
@@ -23,6 +24,7 @@ namespace CoreLayerADC.Compiler.Processor
         {
             try
             {
+                Console.WriteLine("Loading yaml-file: {0}", filePath);
                 using var stream = new StreamReader(filePath);
                 return stream.ReadToEnd();
             }

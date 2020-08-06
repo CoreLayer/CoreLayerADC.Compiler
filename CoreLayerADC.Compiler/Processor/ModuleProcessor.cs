@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Mime;
 using CoreLayerADC.Compiler.Model;
 
 namespace CoreLayerADC.Compiler.Processor
@@ -46,6 +47,12 @@ namespace CoreLayerADC.Compiler.Processor
         private void SortModules()
         {
             _sortedModuleNames = ModuleOrderSubProcessor.SortModuleNames(_modules);
+
+            Console.WriteLine("Sorted modules");
+            foreach (var moduleName in _sortedModuleNames)
+            {
+                Console.WriteLine("\t{0}", moduleName);
+            }
         }
 
         private void SortExpressions()
@@ -55,8 +62,18 @@ namespace CoreLayerADC.Compiler.Processor
             for(var currentIndex = 0; currentIndex < _sortedModuleNames.Count(); currentIndex++)
             {
                 var moduleName = moduleNames[currentIndex];
+                
                 _sortedModuleExpressions[moduleName] = 
                     ModuleCommandProcessor.GetCommandOrder(_modules, moduleName).ToList();
+            }
+            
+            foreach (var module in _sortedModuleExpressions)
+            {
+                Console.WriteLine("Sorted expressions for {0}", module.Key);
+                foreach (var expression in module.Value)
+                {
+                    Console.WriteLine("\t{0}", expression);
+                }
             }
         }
         
@@ -70,11 +87,20 @@ namespace CoreLayerADC.Compiler.Processor
                     .OrderBy(placeholder => placeholder.Name)
                     .Reverse()
                     .ToDictionary(placeholder => placeholder.Name, placeholder => placeholder.Expression);
+
+                Console.WriteLine("Sorted placeholders");
+                foreach (var placeholder in _placeholders)
+                {
+                    Console.WriteLine("\t{0}", placeholder.Key);
+                }
                 
             }
             catch (ArgumentException ex)
             {
-                Console.WriteLine("Duplicate key found in placeholders: {0}", ex.Message);
+                Console.WriteLine();
+                Console.WriteLine("ERROR - Duplicate key found in placeholders: {0}", ex.Message);
+                Environment.Exit(0);
+                
             }
         }
 
